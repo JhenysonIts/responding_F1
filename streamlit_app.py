@@ -24,7 +24,7 @@ st.title("Sistema de Perguntas e Respostas - Fórmula 1 🏎️")
 uploaded_file = st.file_uploader("Faça upload de um arquivo PDF ou use o arquivo padrão:", type=["pdf"])
 
 # Caminho do PDF local padrão (no repositório)
-default_pdf_path = "Fórmula_1.pdf"
+#default_pdf_path = "Fórmula_1.pdf"
 
 if uploaded_file is not None:
     # Salvar o arquivo temporariamente para leitura
