@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 import streamlit as st
 from langchain_community.document_loaders import PDFPlumberLoader
 from langchain_community.vectorstores import FAISS
@@ -6,11 +8,17 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
 from tempfile import NamedTemporaryFile
 
-# Configurar embeddings do OpenAI
-embeddings_model = OpenAIEmbeddings(model="text-embedding-3-large")
+# Carregar variáveis de ambiente
+load_dotenv()
 
-# Configurar modelo de chat
-chat_model = ChatOpenAI(model="gpt-4o-mini", temperature=0.5)
+# Configurar embeddings do OpenAI
+api_key = os.getenv("OPENAI_API_KEY")
+if not api_key:
+    st.error("A chave da API OpenAI não está configurada. Verifique o arquivo .env ou as configurações de ambiente.")
+    st.stop()
+
+embeddings_model = OpenAIEmbeddings(model="text-embedding-3-large", api_key=api_key)
+chat_model = ChatOpenAI(model="gpt-4o-mini", temperature=0.5, api_key=api_key)
 
 # Título do App
 st.title("Sistema de Perguntas e Respostas - Fórmula 1 🏎️")
@@ -61,7 +69,8 @@ if uploaded_file is not None:
                 with st.spinner("Processando sua pergunta..."):
                     try:
                         answer = qa_chain.invoke({"query": question})
-                        st.success(f"Resposta: {answer}")
+                        formatted_answer = answer.get("result", "Erro: Resposta não encontrada.")
+                        st.success(f"Resposta: {formatted_answer}")
                     except Exception as e:
                         st.error(f"Erro ao processar a pergunta: {e}")
             else:
